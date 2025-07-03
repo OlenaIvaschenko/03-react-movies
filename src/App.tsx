@@ -6,6 +6,14 @@ import "./App.css";
 function App() {
   const [count, setCount] = useState(0);
 
+  const token: string = import.meta.env.VITE_TMDB_TOKEN;
+
+  if (token.length > 0) {
+    console.log("Privet token");
+  }
+
+  // console.log(import.meta.env.VITE_TMDB_TOKEN);
+
   return (
     <>
       <div>
