@@ -1,5 +1,5 @@
 import axios from "axios";
-import Movie from "../types/movie";
+// import Movie from "../types/movie";
 
 export const fetchMovies = async (query:string)=>{
     const token: string = import.meta.env.VITE_TMDB_TOKEN;
