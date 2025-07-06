@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import css from "./MovieModal.module.css";
-import type { Movie } from "../../types/movie";
+import  type Movie  from "../../types/movie";
 import { useEffect } from "react";
 
 
@@ -23,7 +23,7 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
 
     document.addEventListener("keydown", handleKeydown);
 
-// При закритті модалки
+
     return () => {
       
       document.removeEventListener("keydown", handleKeydown);
@@ -32,12 +32,15 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
     };
   }, [onClose]);
 
-  useEffect (()=>{
-   document.body.classList.add('modal-open');
-   return () => {
-document.body.classList.remove("modal-open");
-   }
-  }, [])
+  useEffect(() => {
+  const originalOverflow = document.body.style.overflow;
+
+  document.body.style.overflow = 'hidden'; 
+
+  return () => {
+    document.body.style.overflow = originalOverflow; 
+  };
+}, []);
 
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -80,7 +83,7 @@ document.body.classList.remove("modal-open");
         </div>
       </div>
     </div>,
-    document.getElementById("modal-root") as HTMLDivElement
+    document.body
   ): null;
 }
 

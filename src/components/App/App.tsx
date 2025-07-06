@@ -6,52 +6,50 @@ import SearchBar from "../SearchBar/SearchBar";
 import { fetchMovies } from "../../services/movieService";
 import { useState } from "react";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import type { Movie } from "../../types/movie";
+import type Movie from "../../types/movie";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import MovieModal from "../MovieModal/MovieModal";
 import Loader from "../Loader/Loader";
 
 export default function App() {
-  const [films, setFilms] = useState([]);
+  const [movieList, setMovieList] = useState<Movie[]>([]);
   const [error, setError] = useState<boolean>(false);
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const[loader, setLoader] = useState<boolean>(false)
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+ 
+  const[isLoading, setIsLoading] = useState<boolean>(false)
 
-  const openModal = () => setIsModalOpen(true);
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setMovie(null);
-  }
 
   const handleSelect = (movie: Movie) => {
-    setMovie(movie);
-    openModal();
-    // console.log(movie);
-    
+    setSelectedMovie(movie);
+  
   };
+  const closeModal = () => {
+    setSelectedMovie(null);
+  }
+
+  
 
   const handleSearch = async (query: string) => {
     try {
-    setLoader (true);
+    setIsLoading (true);
+    setMovieList([]);
+    setError(false);
 
-      const films = await fetchMovies(query);
+      const movies = await fetchMovies(query);
 
-      if (films.length === 0) {
+      if (movies.length === 0) {
         toast("No movies found for your request.");
-        // return
+       
       }
 
-      setFilms(films);
-
-      // console.log(films);
+      setMovieList(movies);
+     
 
     } catch (error) {
-      setError(!error);
+      setError(true);
       console.log(error);
     }
-    finally {setLoader(false)}
+    finally {setIsLoading(false)}
   };
 
 
@@ -61,13 +59,13 @@ export default function App() {
         <Toaster />
       </div>
       <SearchBar onSubmit={handleSearch} />
-      {loader&& <Loader/>}
+      {isLoading&& <Loader/>}
       {error ? (
         <ErrorMessage />
       ) : (
-        <MovieGrid onSelect={handleSelect} movies={films} />
+        <MovieGrid onSelect={handleSelect} movies={movieList} />
       )}
-      {isModalOpen && <MovieModal movie={movie} onClose={closeModal} />}
+      {selectedMovie && <MovieModal movie={selectedMovie} onClose={closeModal} />}
     </>
   );
 }
