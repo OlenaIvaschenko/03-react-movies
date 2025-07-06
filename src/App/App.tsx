@@ -9,26 +9,33 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import type { Movie } from "../types/movie";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import MovieModal from "../MovieModal/MovieModal";
+import Loader from "../Loader/Loader";
 
 export default function App() {
   const [films, setFilms] = useState([]);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<boolean>(false);
   const [movie, setMovie] = useState<Movie | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const[loader, setLoader] = useState<boolean>(false)
 
   const openModal = () => setIsModalOpen(true);
 
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setMovie(null);
+  }
 
   const handleSelect = (movie: Movie) => {
     setMovie(movie);
     openModal();
-    console.log(movie);
+    // console.log(movie);
     
   };
 
   const handleSearch = async (query: string) => {
     try {
+    setLoader (true);
+
       const films = await fetchMovies(query);
 
       if (films.length === 0) {
@@ -38,20 +45,15 @@ export default function App() {
 
       setFilms(films);
 
-      console.log(films);
+      // console.log(films);
+
     } catch (error) {
       setError(!error);
       console.log(error);
     }
+    finally {setLoader(false)}
   };
 
-  // const token: string = import.meta.env.VITE_TMDB_TOKEN;
-
-  // if (token.length > 0) {
-  //   console.log("Privet token");
-  // }
-
-  // // console.log(import.meta.env.VITE_TMDB_TOKEN);
 
   return (
     <>
@@ -59,6 +61,7 @@ export default function App() {
         <Toaster />
       </div>
       <SearchBar onSubmit={handleSearch} />
+      {loader&& <Loader/>}
       {error ? (
         <ErrorMessage />
       ) : (
